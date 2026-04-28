@@ -1,172 +1,246 @@
 """
-CMF Tarjetas — Scraper
-Descarga el PDF más reciente de tarjetas emitidas desde la CMF,
-lo procesa con Claude y guarda el JSON en frontend/src/data/latest.json.
+CMF Tarjetas — Scraper v2
+Descarga datos de tarjetas emitidas directamente desde la API pública
+de BEST CMF (best-cmf.cl) en formato Excel, sin necesidad de Playwright
+ni Anthropic.
+
+Series descargadas:
+  - SBIF_TDEB_VIG_AGIFI_NUM          : Débito vigentes por emisor
+  - SBIF_TCRED_BANC_VIGTIT_AGIFI_NUM : Crédito titulares por emisor
+  - SBIF_TCRED_BANC_VIGADIC_AGIFI_NUM: Crédito adicionales por emisor
+  - CMF_TPREP_NBANC_VIG_NAT_AGIFI_NUM_MONT: Prepago no bancario por institución
 """
 
-import os
-import sys
+import io
 import json
-import base64
 import pathlib
-import urllib.request
+import sys
 import urllib.error
-from html.parser import HTMLParser
+import urllib.request
+from datetime import datetime
 
-PORTAL_URL = "https://www.cmfchile.cl/portal/estadisticas/617/w3-propertyvalue-44670.html"
-SCRIPT_DIR = pathlib.Path(__file__).parent
-REPO_ROOT = SCRIPT_DIR.parent
-LAST_URL_FILE = SCRIPT_DIR / "last_url.txt"
-OUTPUT_JSON = REPO_ROOT / "frontend" / "src" / "data" / "latest.json"
+import openpyxl
 
-PROMPT = (
-    'Extrae datos de tarjetas emitidas. Responde SOLO JSON sin markdown: '
-    '{"periodo":"string","instituciones":[{"codigo":"string","nombre":"string",'
-    '"tipo":"banco"|"cooperativa","debito":number,"credito":number,"prepago":number}]} '
-    'Busca tablas de tarjetas emitidas por tipo. Usa 0 si no hay dato. '
-    'Incluye TODAS las instituciones.'
+# ─── Configuración ──────────────────────────────────────────────────────────
+
+BEST_API = "https://best-sbif-api.azurewebsites.net"
+BEST_EXCEL_URL = (
+    BEST_API
+    + "/CuadroExcel/?Tag={tag}&Orientacion=H&TodosLosElementos=true&nocache={ts}"
 )
 
-MODEL = "claude-sonnet-4-20250514"
+SERIES = {
+    "debito":        "SBIF_TDEB_VIG_AGIFI_NUM",
+    "cred_tit":      "SBIF_TCRED_BANC_VIGTIT_AGIFI_NUM",
+    "cred_adic":     "SBIF_TCRED_BANC_VIGADIC_AGIFI_NUM",
+    "prepago_nbanc": "CMF_TPREP_NBANC_VIG_NAT_AGIFI_NUM_MONT",
+}
+
+SCRIPT_DIR   = pathlib.Path(__file__).parent
+REPO_ROOT    = SCRIPT_DIR.parent
+OUTPUT_JSON  = REPO_ROOT / "frontend" / "src" / "data" / "latest.json"
+LAST_PERIOD  = SCRIPT_DIR / "last_period.txt"
+
+HTTP_HEADERS = {
+    "User-Agent": "Mozilla/5.0 CMF-Tarjetas-Scraper/2.0",
+    "Referer":    "https://www.best-cmf.cl/",
+}
+
+# Instituciones conocidas como cooperativas
+COOPERATIVAS = {"coopeuch", "capual", "detacoop", "coocretal"}
+
+# Instituciones conocidas como SAEs (emisores no bancarios de tarjetas de crédito)
+# Reguladas bajo Ley 20.950 o como sociedades de apoyo al giro
+SAES = {
+    "cmr falabella",
+    "cat administradora",
+    "car s.a.",
+    "servicios financieros y administración de créditos comerciales",
+    "smu corp",
+    "consorcio tarjetas de crédito",
+}
 
 
-class PDFLinkParser(HTMLParser):
-    """Extrae el primer enlace a PDF en la sección de planillas/informes."""
+# ─── Funciones de descarga ───────────────────────────────────────────────────
 
-    def __init__(self):
-        super().__init__()
-        self.pdf_urls: list[str] = []
-        self._in_section = False
-
-    def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
-        if tag == "a" and "href" in attrs:
-            href = attrs["href"]
-            if href.lower().endswith(".pdf") or ".pdf" in href.lower():
-                self.pdf_urls.append(href)
+def download_excel(tag: str) -> openpyxl.Workbook:
+    ts = int(datetime.utcnow().timestamp())
+    url = BEST_EXCEL_URL.format(tag=tag, ts=ts)
+    req = urllib.request.Request(url, headers=HTTP_HEADERS)
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            return openpyxl.load_workbook(io.BytesIO(resp.read()))
+    except urllib.error.HTTPError as e:
+        print(f"ERROR HTTP {e.code} descargando {tag}", file=sys.stderr)
+        raise
 
 
-def fetch_html(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CMF-Scraper/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return resp.read().decode("utf-8", errors="replace")
+def parse_latest_row(wb: openpyxl.Workbook) -> tuple[datetime | None, dict[str, int]]:
+    """
+    Extrae la fila más reciente del Excel de BEST.
+    Retorna (fecha, {institución: valor}).
+    Los '-' se convierten a 0.
+    """
+    ws = wb.active
+
+    # Fila 4 = cabeceras, fila 5+ = datos
+    headers = [cell.value for cell in ws[4]]
+
+    last_date: datetime | None = None
+    last_values: list = []
+
+    for row in ws.iter_rows(min_row=5, values_only=True):
+        if row[0] is None:
+            continue
+        last_date = row[0]
+        last_values = list(row)
+
+    result: dict[str, int] = {}
+    for col, val in zip(headers[1:], last_values[1:]):
+        if col is None:
+            continue
+        name = col.strip()
+        if val is None or val == "-":
+            result[name] = 0
+        else:
+            try:
+                result[name] = int(str(val).replace(",", "").replace(".", ""))
+            except ValueError:
+                result[name] = 0
+
+    return last_date, result
 
 
-def find_pdf_url(html: str) -> str | None:
-    parser = PDFLinkParser()
-    parser.feed(html)
-    if not parser.pdf_urls:
-        return None
-    url = parser.pdf_urls[0]
-    if url.startswith("http"):
-        return url
-    if url.startswith("/"):
-        return "https://www.cmfchile.cl" + url
-    return "https://www.cmfchile.cl/" + url
-
-
-def download_pdf(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CMF-Scraper/1.0"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return resp.read()
-
-
-def extract_with_claude(pdf_bytes: bytes, api_key: str) -> dict:
-    import urllib.request
-    b64 = base64.standard_b64encode(pdf_bytes).decode()
-    payload = json.dumps({
-        "model": MODEL,
-        "max_tokens": 8192,
-        "messages": [{
-            "role": "user",
-            "content": [
-                {
-                    "type": "document",
-                    "source": {
-                        "type": "base64",
-                        "media_type": "application/pdf",
-                        "data": b64,
-                    },
-                },
-                {"type": "text", "text": PROMPT},
-            ],
-        }],
-    }).encode()
-
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=payload,
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        method="POST",
+def clean_name(name: str) -> str:
+    """Normaliza el nombre de la institución para comparación."""
+    return (
+        name.lower()
+        .replace("banco del estado de chile", "bancoestado")
+        .replace("banco itaú chile (*)", "banco itaú chile")
+        .strip()
     )
-    with urllib.request.urlopen(req, timeout=300) as resp:
-        result = json.loads(resp.read())
-
-    text = result["content"][0]["text"]
-    # Strip markdown fences if present
-    text = text.strip()
-    if text.startswith("```"):
-        text = text.split("```")[1]
-        if text.startswith("json"):
-            text = text[4:]
-    return json.loads(text)
 
 
-def main():
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        print("ERROR: ANTHROPIC_API_KEY no está definida.", file=sys.stderr)
-        sys.exit(1)
+def tipo_for(name: str, is_prepago_nbanc: bool) -> str:
+    normalized = clean_name(name)
+    if any(coop in normalized for coop in COOPERATIVAS):
+        return "cooperativa"
+    if is_prepago_nbanc or any(sae in normalized for sae in SAES):
+        return "no_bancario"
+    return "banco"
 
-    print(f"Consultando portal CMF: {PORTAL_URL}")
-    try:
-        html = fetch_html(PORTAL_URL)
-    except Exception as e:
-        print(f"ERROR al descargar portal: {e}", file=sys.stderr)
-        sys.exit(1)
 
-    pdf_url = find_pdf_url(html)
-    if not pdf_url:
-        print("ERROR: No se encontró ningún PDF en la página.", file=sys.stderr)
-        sys.exit(1)
+def format_periodo(dt: datetime) -> str:
+    meses = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+    ]
+    return f"{meses[dt.month - 1]} {dt.year}"
 
-    print(f"PDF encontrado: {pdf_url}")
 
-    # Comparar con URL anterior
-    last_url = LAST_URL_FILE.read_text().strip() if LAST_URL_FILE.exists() else ""
-    if pdf_url == last_url:
-        print("Sin cambios: la URL del PDF es la misma que la última procesada. Nada que hacer.")
-        sys.exit(0)
+# ─── Lógica principal ────────────────────────────────────────────────────────
 
-    print("Nueva URL detectada, descargando PDF…")
-    try:
-        pdf_bytes = download_pdf(pdf_url)
-    except Exception as e:
-        print(f"ERROR al descargar PDF: {e}", file=sys.stderr)
-        sys.exit(1)
+def main() -> None:
+    print("Descargando series de BEST CMF...")
 
-    print(f"PDF descargado ({len(pdf_bytes):,} bytes). Enviando a Claude…")
-    try:
-        data = extract_with_claude(pdf_bytes, api_key)
-    except Exception as e:
-        print(f"ERROR al llamar a Claude: {e}", file=sys.stderr)
-        sys.exit(1)
+    # 1. Descargar todos los Excel
+    wb_deb  = download_excel(SERIES["debito"])
+    wb_ctit = download_excel(SERIES["cred_tit"])
+    wb_cad  = download_excel(SERIES["cred_adic"])
+    wb_prep = download_excel(SERIES["prepago_nbanc"])
 
-    n = len(data.get("instituciones", []))
-    print(f"Datos extraídos: periodo={data.get('periodo')}, instituciones={n}")
-    if n == 0:
-        print("WARNING: Claude no devolvió instituciones. Revisa el prompt o el PDF.", file=sys.stderr)
+    # 2. Parsear última fila de cada serie
+    fecha_deb,  deb   = parse_latest_row(wb_deb)
+    fecha_ctit, ctit  = parse_latest_row(wb_ctit)
+    fecha_cad,  cadic = parse_latest_row(wb_cad)
+    fecha_prep, prep  = parse_latest_row(wb_prep)
 
+    print(f"  Débito:         {fecha_deb}  ({len(deb)} inst.)")
+    print(f"  Crédito tit.:   {fecha_ctit}  ({len(ctit)} inst.)")
+    print(f"  Crédito adic.:  {fecha_cad}  ({len(cadic)} inst.)")
+    print(f"  Prepago nbanc:  {fecha_prep}  ({len(prep)} inst.)")
+
+    # Usar la fecha más reciente disponible para el período
+    fechas = [f for f in [fecha_deb, fecha_ctit, fecha_cad, fecha_prep] if f]
+    periodo_dt = max(fechas) if fechas else datetime.utcnow()
+    periodo_str = format_periodo(periodo_dt)
+
+    # 3. Verificar si ya procesamos este período
+    periodo_key = periodo_dt.strftime("%Y-%m")
+    if LAST_PERIOD.exists():
+        last = LAST_PERIOD.read_text().strip()
+        if last == periodo_key:
+            print(f"Sin cambios: período {periodo_key} ya procesado. Nada que hacer.")
+            sys.exit(0)
+
+    # 4. Consolidar instituciones
+    # Unión de instituciones de débito y crédito (bancarias y SAEs)
+    inst_map: dict[str, dict] = {}  # nombre_normalizado -> datos
+
+    def get_or_create(name: str, is_prepago: bool = False) -> dict:
+        key = clean_name(name)
+        if key not in inst_map:
+            inst_map[key] = {
+                "nombre":  name,
+                "tipo":    tipo_for(name, is_prepago),
+                "debito":  0,
+                "credito": 0,
+                "prepago": 0,
+            }
+        return inst_map[key]
+
+    # Débito (bancos + cooperativas con débito)
+    for name, val in deb.items():
+        if val > 0:
+            get_or_create(name)["debito"] = val
+
+    # Crédito = titulares + adicionales
+    all_cred_names = set(ctit.keys()) | set(cadic.keys())
+    for name in all_cred_names:
+        t = ctit.get(name, 0)
+        a = cadic.get(name, 0)
+        total_cred = t + a
+        if total_cred > 0:
+            get_or_create(name)["credito"] = total_cred
+
+    # Prepago no bancario (SAEs, emisores especializados)
+    for name, val in prep.items():
+        if val > 0:
+            inst = get_or_create(name, is_prepago=True)
+            inst["prepago"] = val
+            # Si solo tiene prepago y no tiene débito/crédito, es no_bancario
+            if inst["debito"] == 0 and inst["credito"] == 0:
+                inst["tipo"] = "no_bancario"
+
+    # 5. Filtrar instituciones con datos reales y ordenar por total descendente
+    instituciones = [
+        v for v in inst_map.values()
+        if v["debito"] + v["credito"] + v["prepago"] > 0
+    ]
+    instituciones.sort(key=lambda x: x["debito"] + x["credito"] + x["prepago"], reverse=True)
+
+    # Generar códigos simples (basados en posición, sin datos de códigos reales disponibles)
+    for i, inst in enumerate(instituciones):
+        inst["codigo"] = str(i + 1).zfill(3)
+
+    output = {
+        "periodo":    periodo_str,
+        "actualizado": datetime.utcnow().strftime("%Y-%m-%d"),
+        "instituciones": instituciones,
+    }
+
+    print(f"\nInstituciones consolidadas: {len(instituciones)}")
+    for inst in instituciones[:5]:
+        print(f"  {inst['nombre']}: deb={inst['debito']:,} cred={inst['credito']:,} prep={inst['prepago']:,} [{inst['tipo']}]")
+
+    # 6. Guardar JSON
     OUTPUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_JSON.write_text(json.dumps(data, ensure_ascii=False, indent=2))
-    print(f"JSON guardado en {OUTPUT_JSON}")
+    OUTPUT_JSON.write_text(json.dumps(output, ensure_ascii=False, indent=2))
+    print(f"\nJSON guardado en {OUTPUT_JSON}")
 
-    LAST_URL_FILE.write_text(pdf_url)
-    print(f"URL guardada en {LAST_URL_FILE}")
+    # 7. Guardar período procesado
+    LAST_PERIOD.write_text(periodo_key)
+    print(f"Período guardado en {LAST_PERIOD}")
     print("Listo.")
 
 

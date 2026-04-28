@@ -96,6 +96,7 @@ export default function App() {
   const totTotal = totDebito + totCredito + totPrepago
   const bancos = instituciones.filter(i => i.tipo === 'banco')
   const coops = instituciones.filter(i => i.tipo === 'cooperativa')
+  const noBanc = instituciones.filter(i => i.tipo === 'no_bancario')
 
   const handlePDF = async (e) => {
     const file = e.target.files?.[0]
@@ -154,6 +155,7 @@ export default function App() {
   const sectorData = [
     { name: 'Bancos', debito: bancos.reduce((s, i) => s + i.debito, 0), credito: bancos.reduce((s, i) => s + i.credito, 0), prepago: bancos.reduce((s, i) => s + i.prepago, 0) },
     { name: 'Cooperativas', debito: coops.reduce((s, i) => s + i.debito, 0), credito: coops.reduce((s, i) => s + i.credito, 0), prepago: coops.reduce((s, i) => s + i.prepago, 0) },
+    { name: 'SAEs / Prepago', debito: noBanc.reduce((s, i) => s + i.debito, 0), credito: noBanc.reduce((s, i) => s + i.credito, 0), prepago: noBanc.reduce((s, i) => s + i.prepago, 0) },
   ]
 
   // ─── RANKING TAB ──────────────────────────────────────────────────────────
@@ -244,7 +246,7 @@ export default function App() {
           <KPI label="Débito" value={fmt(totDebito)} color={C.debito} sub={`${((totDebito / totTotal) * 100).toFixed(1)}% del total`} />
           <KPI label="Crédito" value={fmt(totCredito)} color={C.credito} sub={`${((totCredito / totTotal) * 100).toFixed(1)}% del total`} />
           <KPI label="Prepago" value={fmt(totPrepago)} color={C.prepago} sub={`${((totPrepago / totTotal) * 100).toFixed(1)}% del total`} />
-          <KPI label="Instituciones" value={instituciones.length} sub={`${bancos.length} bancos · ${coops.length} coops`} />
+          <KPI label="Instituciones" value={instituciones.length} sub={`${bancos.length} bancos · ${coops.length} coops · ${noBanc.length} SAEs`} />
         </div>
 
         {/* ─── TAB: VISTA GENERAL ─── */}
@@ -267,7 +269,7 @@ export default function App() {
             </div>
 
             <div style={{ background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-              <h2 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: C.accent }}>Bancos vs Cooperativas</h2>
+              <h2 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: C.accent }}>Por sector</h2>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={sectorData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} horizontal={false} />
@@ -309,7 +311,7 @@ export default function App() {
                     <div style={{ width: 24, textAlign: 'right', color: C.muted, fontSize: 13, fontWeight: 600 }}>{idx + 1}</div>
                     <div style={{ width: 220, fontSize: 13, fontWeight: 500, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {inst.nombre}
-                      <span style={{ marginLeft: 6, fontSize: 11, color: C.muted }}>{inst.tipo === 'cooperativa' ? 'COOP' : 'BANCO'}</span>
+                      <span style={{ marginLeft: 6, fontSize: 11, color: C.muted }}>{inst.tipo === 'cooperativa' ? 'COOP' : inst.tipo === 'no_bancario' ? 'SAE' : 'BANCO'}</span>
                     </div>
                     <div style={{ flex: 1, background: C.bg, borderRadius: 4, height: 20, overflow: 'hidden' }}>
                       <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 0.3s' }} />
@@ -349,9 +351,9 @@ export default function App() {
                       <td style={{ padding: '10px 16px' }}>
                         <span style={{
                           fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 4,
-                          background: inst.tipo === 'banco' ? '#EFF6FF' : '#F0FDF4',
-                          color: inst.tipo === 'banco' ? C.debito : C.credito
-                        }}>{inst.tipo === 'banco' ? 'BANCO' : 'COOP'}</span>
+                          background: inst.tipo === 'banco' ? '#EFF6FF' : inst.tipo === 'cooperativa' ? '#F0FDF4' : '#FFFBEB',
+                          color: inst.tipo === 'banco' ? C.debito : inst.tipo === 'cooperativa' ? C.credito : C.prepago
+                        }}>{inst.tipo === 'banco' ? 'BANCO' : inst.tipo === 'cooperativa' ? 'COOP' : 'SAE'}</span>
                       </td>
                       <td style={{ padding: '10px 16px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: C.debito, fontWeight: 600 }}>{fmtFull(inst.debito)}</td>
                       <td style={{ padding: '10px 16px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: C.credito, fontWeight: 600 }}>{fmtFull(inst.credito)}</td>
@@ -368,7 +370,7 @@ export default function App() {
       </main>
 
       <footer style={{ textAlign: 'center', padding: '24px 32px', color: C.muted, fontSize: 12, borderTop: `1px solid ${C.border}`, marginTop: 40 }}>
-        Datos: CMF Chile · Actualización automática vía GitHub Actions · Procesado con Claude AI
+        Datos: BEST CMF Chile · Actualización automática vía GitHub Actions
       </footer>
     </div>
   )

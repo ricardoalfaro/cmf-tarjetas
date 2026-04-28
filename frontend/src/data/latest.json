@@ -1,1 +1,214 @@
-{}
+{
+  "periodo": "Enero 2026",
+  "actualizado": "2026-04-28",
+  "instituciones": [
+    {
+      "nombre": "Banco del Estado de Chile",
+      "tipo": "banco",
+      "debito": 14163024,
+      "credito": 808412,
+      "prepago": 0,
+      "codigo": "001"
+    },
+    {
+      "nombre": "Mercado pago",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 11160169,
+      "codigo": "002"
+    },
+    {
+      "nombre": "Banco de Chile",
+      "tipo": "banco",
+      "debito": 4101477,
+      "credito": 1834288,
+      "prepago": 0,
+      "codigo": "003"
+    },
+    {
+      "nombre": "Banco Santander",
+      "tipo": "banco",
+      "debito": 2325527,
+      "credito": 1671583,
+      "prepago": 0,
+      "codigo": "004"
+    },
+    {
+      "nombre": "CMR Falabella S.A (SAG)",
+      "tipo": "banco",
+      "debito": 0,
+      "credito": 3912474,
+      "prepago": 0,
+      "codigo": "005"
+    },
+    {
+      "nombre": "BCI",
+      "tipo": "banco",
+      "debito": 3043616,
+      "credito": 805161,
+      "prepago": 0,
+      "codigo": "006"
+    },
+    {
+      "nombre": "Banco Falabella",
+      "tipo": "banco",
+      "debito": 2939754,
+      "credito": 0,
+      "prepago": 0,
+      "codigo": "007"
+    },
+    {
+      "nombre": "Tenpo",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 2438083,
+      "codigo": "008"
+    },
+    {
+      "nombre": "CAT Administradora de Tarjetas",
+      "tipo": "banco",
+      "debito": 0,
+      "credito": 1977154,
+      "prepago": 0,
+      "codigo": "009"
+    },
+    {
+      "nombre": "CAR S.A.",
+      "tipo": "banco",
+      "debito": 0,
+      "credito": 1102319,
+      "prepago": 0,
+      "codigo": "010"
+    },
+    {
+      "nombre": "Los Andes prepago",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 1064613,
+      "codigo": "011"
+    },
+    {
+      "nombre": "Scotiabank",
+      "tipo": "banco",
+      "debito": 533506,
+      "credito": 370431,
+      "prepago": 0,
+      "codigo": "012"
+    },
+    {
+      "nombre": "Banco Itaú Chile",
+      "tipo": "banco",
+      "debito": 400713,
+      "credito": 428321,
+      "prepago": 0,
+      "codigo": "013"
+    },
+    {
+      "nombre": "Copec",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 827397,
+      "codigo": "014"
+    },
+    {
+      "nombre": "Servicios Financieros y Administración de Créditos Comerciales S.A. (SAG)",
+      "tipo": "banco",
+      "debito": 0,
+      "credito": 815980,
+      "prepago": 0,
+      "codigo": "015"
+    },
+    {
+      "nombre": "Banco Ripley",
+      "tipo": "banco",
+      "debito": 667956,
+      "credito": 0,
+      "prepago": 0,
+      "codigo": "016"
+    },
+    {
+      "nombre": "Coopeuch",
+      "tipo": "cooperativa",
+      "debito": 421274,
+      "credito": 48385,
+      "prepago": 0,
+      "codigo": "017"
+    },
+    {
+      "nombre": "Banco BICE",
+      "tipo": "banco",
+      "debito": 233747,
+      "credito": 134124,
+      "prepago": 0,
+      "codigo": "018"
+    },
+    {
+      "nombre": "PREX",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 352138,
+      "codigo": "019"
+    },
+    {
+      "nombre": "Global Card",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 284686,
+      "codigo": "020"
+    },
+    {
+      "nombre": "Los Héroes prepago",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 189756,
+      "codigo": "021"
+    },
+    {
+      "nombre": "Banco Consorcio",
+      "tipo": "banco",
+      "debito": 82760,
+      "credito": 12610,
+      "prepago": 0,
+      "codigo": "022"
+    },
+    {
+      "nombre": "Banco Internacional",
+      "tipo": "banco",
+      "debito": 23153,
+      "credito": 8034,
+      "prepago": 0,
+      "codigo": "023"
+    },
+    {
+      "nombre": "SUMUP",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 16107,
+      "codigo": "024"
+    },
+    {
+      "nombre": "Inversiones LP",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 8238,
+      "codigo": "025"
+    },
+    {
+      "nombre": "Tricard",
+      "tipo": "no_bancario",
+      "debito": 0,
+      "credito": 0,
+      "prepago": 16,
+      "codigo": "026"
+    }
+  ]
+}
