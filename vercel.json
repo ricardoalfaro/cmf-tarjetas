@@ -1,7 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "framework": "vite",
-  "rootDirectory": "frontend"
+  "installCommand": "echo 'deps handled in buildCommand'",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": null
 }
