@@ -1,0 +1,42 @@
+name: Update CMF Data
+
+on:
+  schedule:
+    # Lunes 9:00 AM UTC (6:00 AM Chile en invierno, 5:00 AM en verano)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Permite ejecución manual desde la UI de GitHub
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Necesario para hacer commit y push
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run scraper
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scraper/scraper.py
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet frontend/src/data/latest.json scraper/last_url.txt 2>/dev/null && \
+             git ls-files --error-unmatch frontend/src/data/latest.json 2>/dev/null; then
+            echo "Sin cambios en los datos, nada que commitear."
+          else
+            git add frontend/src/data/latest.json scraper/last_url.txt
+            git commit -m "chore: actualizar datos CMF $(date -u '+%Y-%m-%d')"
+            git push
+            echo "Datos actualizados y pusheados."
+          fi

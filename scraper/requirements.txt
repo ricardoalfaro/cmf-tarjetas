@@ -1,0 +1,3 @@
+# El scraper usa solo stdlib de Python 3.11+
+# (urllib, json, base64, html.parser, pathlib)
+# No se requieren dependencias externas.
