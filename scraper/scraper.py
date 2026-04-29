@@ -212,6 +212,14 @@ def main() -> None:
             if inst["debito"] == 0 and inst["credito"] == 0:
                 inst["tipo"] = "no_bancario"
 
+    # 4b. Corrección: cooperativas reportan sus tarjetas de prepago (Dale, etc.)
+    #     en la serie de débito de BEST — reclasificar debito→prepago para ellas.
+    for inst in inst_map.values():
+        if inst["tipo"] == "cooperativa" and inst["debito"] > 0:
+            print(f"  [corrección] {inst['nombre']}: {inst['debito']:,} débito → prepago (producto de prepago reportado como débito en BEST)")
+            inst["prepago"] += inst["debito"]
+            inst["debito"] = 0
+
     # 5. Filtrar instituciones con datos reales y ordenar por total descendente
     instituciones = [
         v for v in inst_map.values()

@@ -1,6 +1,6 @@
 {
   "periodo": "Enero 2026",
-  "actualizado": "2026-04-28",
+  "actualizado": "2026-04-29",
   "instituciones": [
     {
       "nombre": "Banco del Estado de Chile",
@@ -36,7 +36,7 @@
     },
     {
       "nombre": "CMR Falabella S.A (SAG)",
-      "tipo": "banco",
+      "tipo": "no_bancario",
       "debito": 0,
       "credito": 3912474,
       "prepago": 0,
@@ -68,7 +68,7 @@
     },
     {
       "nombre": "CAT Administradora de Tarjetas",
-      "tipo": "banco",
+      "tipo": "no_bancario",
       "debito": 0,
       "credito": 1977154,
       "prepago": 0,
@@ -76,7 +76,7 @@
     },
     {
       "nombre": "CAR S.A.",
-      "tipo": "banco",
+      "tipo": "no_bancario",
       "debito": 0,
       "credito": 1102319,
       "prepago": 0,
@@ -116,7 +116,7 @@
     },
     {
       "nombre": "Servicios Financieros y Administración de Créditos Comerciales S.A. (SAG)",
-      "tipo": "banco",
+      "tipo": "no_bancario",
       "debito": 0,
       "credito": 815980,
       "prepago": 0,
@@ -133,9 +133,9 @@
     {
       "nombre": "Coopeuch",
       "tipo": "cooperativa",
-      "debito": 421274,
+      "debito": 0,
       "credito": 48385,
-      "prepago": 0,
+      "prepago": 421274,
       "codigo": "017"
     },
     {
