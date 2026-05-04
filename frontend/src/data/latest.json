@@ -1,12 +1,12 @@
 {
-  "periodo": "Enero 2026",
-  "actualizado": "2026-04-29",
+  "periodo": "Febrero 2026",
+  "actualizado": "2026-05-04",
   "instituciones": [
     {
       "nombre": "Banco del Estado de Chile",
       "tipo": "banco",
-      "debito": 14163024,
-      "credito": 808412,
+      "debito": 14538267,
+      "credito": 780384,
       "prepago": 0,
       "codigo": "001"
     },
@@ -15,22 +15,22 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 11160169,
+      "prepago": 11464442,
       "codigo": "002"
     },
     {
       "nombre": "Banco de Chile",
       "tipo": "banco",
-      "debito": 4101477,
-      "credito": 1834288,
+      "debito": 4136965,
+      "credito": 1834151,
       "prepago": 0,
       "codigo": "003"
     },
     {
       "nombre": "Banco Santander",
       "tipo": "banco",
-      "debito": 2325527,
-      "credito": 1671583,
+      "debito": 2603357,
+      "credito": 1667656,
       "prepago": 0,
       "codigo": "004"
     },
@@ -38,22 +38,22 @@
       "nombre": "CMR Falabella S.A (SAG)",
       "tipo": "no_bancario",
       "debito": 0,
-      "credito": 3912474,
+      "credito": 3926627,
       "prepago": 0,
       "codigo": "005"
     },
     {
       "nombre": "BCI",
       "tipo": "banco",
-      "debito": 3043616,
-      "credito": 805161,
+      "debito": 3069240,
+      "credito": 817607,
       "prepago": 0,
       "codigo": "006"
     },
     {
       "nombre": "Banco Falabella",
       "tipo": "banco",
-      "debito": 2939754,
+      "debito": 2995237,
       "credito": 0,
       "prepago": 0,
       "codigo": "007"
@@ -63,14 +63,14 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 2438083,
+      "prepago": 2453107,
       "codigo": "008"
     },
     {
       "nombre": "CAT Administradora de Tarjetas",
       "tipo": "no_bancario",
       "debito": 0,
-      "credito": 1977154,
+      "credito": 1967456,
       "prepago": 0,
       "codigo": "009"
     },
@@ -78,7 +78,7 @@
       "nombre": "CAR S.A.",
       "tipo": "no_bancario",
       "debito": 0,
-      "credito": 1102319,
+      "credito": 1097269,
       "prepago": 0,
       "codigo": "010"
     },
@@ -87,45 +87,45 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 1064613,
+      "prepago": 1049994,
       "codigo": "011"
     },
     {
       "nombre": "Scotiabank",
       "tipo": "banco",
-      "debito": 533506,
-      "credito": 370431,
+      "debito": 531071,
+      "credito": 374334,
       "prepago": 0,
       "codigo": "012"
-    },
-    {
-      "nombre": "Banco Itaú Chile",
-      "tipo": "banco",
-      "debito": 400713,
-      "credito": 428321,
-      "prepago": 0,
-      "codigo": "013"
     },
     {
       "nombre": "Copec",
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 827397,
+      "prepago": 858698,
+      "codigo": "013"
+    },
+    {
+      "nombre": "Banco Itaú Chile",
+      "tipo": "banco",
+      "debito": 404367,
+      "credito": 428178,
+      "prepago": 0,
       "codigo": "014"
     },
     {
       "nombre": "Servicios Financieros y Administración de Créditos Comerciales S.A. (SAG)",
       "tipo": "no_bancario",
       "debito": 0,
-      "credito": 815980,
+      "credito": 819946,
       "prepago": 0,
       "codigo": "015"
     },
     {
       "nombre": "Banco Ripley",
       "tipo": "banco",
-      "debito": 667956,
+      "debito": 667209,
       "credito": 0,
       "prepago": 0,
       "codigo": "016"
@@ -134,24 +134,24 @@
       "nombre": "Coopeuch",
       "tipo": "cooperativa",
       "debito": 0,
-      "credito": 48385,
-      "prepago": 421274,
+      "credito": 49443,
+      "prepago": 419175,
       "codigo": "017"
-    },
-    {
-      "nombre": "Banco BICE",
-      "tipo": "banco",
-      "debito": 233747,
-      "credito": 134124,
-      "prepago": 0,
-      "codigo": "018"
     },
     {
       "nombre": "PREX",
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 352138,
+      "prepago": 391460,
+      "codigo": "018"
+    },
+    {
+      "nombre": "Banco BICE",
+      "tipo": "banco",
+      "debito": 234130,
+      "credito": 133867,
+      "prepago": 0,
       "codigo": "019"
     },
     {
@@ -159,7 +159,7 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 284686,
+      "prepago": 310349,
       "codigo": "020"
     },
     {
@@ -167,22 +167,22 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 189756,
+      "prepago": 184358,
       "codigo": "021"
     },
     {
       "nombre": "Banco Consorcio",
       "tipo": "banco",
-      "debito": 82760,
-      "credito": 12610,
+      "debito": 83347,
+      "credito": 13159,
       "prepago": 0,
       "codigo": "022"
     },
     {
       "nombre": "Banco Internacional",
       "tipo": "banco",
-      "debito": 23153,
-      "credito": 8034,
+      "debito": 23294,
+      "credito": 7981,
       "prepago": 0,
       "codigo": "023"
     },
@@ -191,7 +191,7 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 16107,
+      "prepago": 17017,
       "codigo": "024"
     },
     {
@@ -207,7 +207,7 @@
       "tipo": "no_bancario",
       "debito": 0,
       "credito": 0,
-      "prepago": 16,
+      "prepago": 17,
       "codigo": "026"
     }
   ]
