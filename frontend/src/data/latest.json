@@ -1,11 +1,11 @@
 {
-  "periodo": "Mayo 2026",
-  "actualizado": "2026-08-03",
+  "periodo": "Junio 2026",
+  "actualizado": "2026-08-31",
   "instituciones": [
     {
       "nombre": "Banco del Estado de Chile",
       "tipo": "banco",
-      "debito": 14595951,
+      "debito": 14673806,
       "credito": 765729,
       "prepago": 0,
       "codigo": "001"
@@ -21,7 +21,7 @@
     {
       "nombre": "Banco de Chile",
       "tipo": "banco",
-      "debito": 4237634,
+      "debito": 4255895,
       "credito": 1821520,
       "prepago": 0,
       "codigo": "003"
@@ -37,7 +37,7 @@
     {
       "nombre": "Banco Santander",
       "tipo": "banco",
-      "debito": 2286098,
+      "debito": 2266891,
       "credito": 1639941,
       "prepago": 0,
       "codigo": "005"
@@ -45,7 +45,7 @@
     {
       "nombre": "BCI",
       "tipo": "banco",
-      "debito": 3015203,
+      "debito": 3025705,
       "credito": 859975,
       "prepago": 0,
       "codigo": "006"
@@ -53,7 +53,7 @@
     {
       "nombre": "Banco Falabella",
       "tipo": "banco",
-      "debito": 3099075,
+      "debito": 3120099,
       "credito": 0,
       "prepago": 0,
       "codigo": "007"
@@ -101,7 +101,7 @@
     {
       "nombre": "Scotiabank",
       "tipo": "banco",
-      "debito": 531303,
+      "debito": 529613,
       "credito": 382951,
       "prepago": 0,
       "codigo": "013"
@@ -117,7 +117,7 @@
     {
       "nombre": "Banco Itaú Chile",
       "tipo": "banco",
-      "debito": 372333,
+      "debito": 359852,
       "credito": 426572,
       "prepago": 0,
       "codigo": "015"
@@ -125,18 +125,10 @@
     {
       "nombre": "Banco Ripley",
       "tipo": "banco",
-      "debito": 664569,
+      "debito": 663853,
       "credito": 0,
       "prepago": 0,
       "codigo": "016"
-    },
-    {
-      "nombre": "Coopeuch",
-      "tipo": "cooperativa",
-      "debito": 0,
-      "credito": 51809,
-      "prepago": 412519,
-      "codigo": "017"
     },
     {
       "nombre": "PREX",
@@ -144,12 +136,20 @@
       "debito": 0,
       "credito": 0,
       "prepago": 462572,
+      "codigo": "017"
+    },
+    {
+      "nombre": "Coopeuch",
+      "tipo": "cooperativa",
+      "debito": 0,
+      "credito": 51809,
+      "prepago": 389630,
       "codigo": "018"
     },
     {
       "nombre": "Banco BICE",
       "tipo": "banco",
-      "debito": 237676,
+      "debito": 236667,
       "credito": 130684,
       "prepago": 0,
       "codigo": "019"
@@ -173,7 +173,7 @@
     {
       "nombre": "Banco Consorcio",
       "tipo": "banco",
-      "debito": 86649,
+      "debito": 87567,
       "credito": 13407,
       "prepago": 0,
       "codigo": "022"
@@ -181,7 +181,7 @@
     {
       "nombre": "Banco Internacional",
       "tipo": "banco",
-      "debito": 23500,
+      "debito": 23433,
       "credito": 7805,
       "prepago": 0,
       "codigo": "023"
